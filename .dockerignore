@@ -1,0 +1,10 @@
+.git
+.github
+.venv
+venv
+__pycache__
+.pytest_cache
+*.pyc
+.DS_Store
+bandit-report.json
+trivy-report.json

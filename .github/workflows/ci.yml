@@ -1,0 +1,58 @@
+name: CI - Rede Alimenta IA
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-and-security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install bandit
+
+      - name: Executar testes
+        run: pytest -q
+
+      - name: Executar Bandit e gerar relatorio
+        run: |
+          bandit -r app -f json -o bandit-report.json
+          bandit -r app -ll
+
+      - name: Construir imagem Docker
+        run: docker build --pull -t redealimentaia-api:ci .
+
+      - name: Executar Trivy e gerar relatorio
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'redealimentaia-api:ci'
+          format: 'json'
+          output: 'trivy-report.json'
+          severity: 'HIGH,CRITICAL'
+          ignore-unfixed: true
+          exit-code: '1'
+
+      - name: Publicar relatorios de seguranca
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorios-sast
+          path: |
+            bandit-report.json
+            trivy-report.json
+          if-no-files-found: warn
