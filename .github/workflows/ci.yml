@@ -2,9 +2,9 @@ name: CI - Rede Alimenta IA
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   test-and-security:
@@ -37,15 +37,28 @@ jobs:
       - name: Construir imagem Docker
         run: docker build --pull -t redealimentaia-api:ci .
 
-      - name: Executar Trivy e gerar relatorio
+      # Gera o relatório completo sem derrubar o pipeline.
+      - name: Trivy - gerar relatorio
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'redealimentaia-api:ci'
-          format: 'json'
-          output: 'trivy-report.json'
-          severity: 'HIGH,CRITICAL'
+          image-ref: "redealimentaia-api:ci"
+          format: "json"
+          output: "trivy-report.json"
+          severity: "HIGH,CRITICAL"
           ignore-unfixed: true
-          exit-code: '1'
+          scanners: "vuln"
+          exit-code: "0"
+
+      # Mostra as vulnerabilidades no log e aplica o Security Gate.
+      - name: Trivy - Security Gate
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "redealimentaia-api:ci"
+          format: "table"
+          severity: "HIGH,CRITICAL"
+          ignore-unfixed: true
+          scanners: "vuln"
+          exit-code: "1"
 
       - name: Publicar relatorios de seguranca
         if: always()
