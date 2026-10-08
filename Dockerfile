@@ -7,11 +7,11 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir --upgrade \
-    "jaraco.context==6.1.0" \
-    "wheel==0.46.2" \
-    && python -c "import importlib.metadata as m; print('jaraco.context:', m.version('jaraco.context')); print('wheel:', m.version('wheel'))"
+RUN pip install --no-cache-dir --upgrade \
+    pip \
+    setuptools \
+    && pip install --no-cache-dir -r requirements.txt \
+    && python -c "import importlib.metadata as m; print('setuptools:', m.version('setuptools')); print('wheel:', m.version('wheel')); print('jaraco.context:', m.version('jaraco.context'))"
 
 COPY app ./app
 COPY data ./data
