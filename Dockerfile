@@ -7,11 +7,8 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --upgrade \
-    pip \
-    setuptools \
-    && pip install --no-cache-dir -r requirements.txt \
-    && python -c "import importlib.metadata as m; print('setuptools:', m.version('setuptools')); print('wheel:', m.version('wheel')); print('jaraco.context:', m.version('jaraco.context'))"
+RUN pip install --no-cache-dir --upgrade pip setuptools \
+    && pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 COPY data ./data
