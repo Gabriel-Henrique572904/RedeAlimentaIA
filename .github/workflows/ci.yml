@@ -37,7 +37,6 @@ jobs:
       - name: Construir imagem Docker
         run: docker build --pull -t redealimentaia-api:ci .
 
-      # Gera o relatório completo sem derrubar o pipeline.
       - name: Trivy - gerar relatorio
         uses: aquasecurity/trivy-action@master
         with:
@@ -49,7 +48,6 @@ jobs:
           scanners: "vuln"
           exit-code: "0"
 
-      # Mostra as vulnerabilidades no log e aplica o Security Gate.
       - name: Trivy - Security Gate
         uses: aquasecurity/trivy-action@master
         with:
