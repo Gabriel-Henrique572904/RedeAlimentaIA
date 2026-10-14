@@ -56,6 +56,12 @@ def inicio():
     }
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+
 @app.post("/prever")
 def prever(lote: LoteInput):
     resultado = modelo.prever_prioridade_lote(
